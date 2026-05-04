@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLUJO — Sistema de Control Financiero Completo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:   #080808;
+    --dark:    #111111;
+    --surface: #1A1A18;
+    --border:  #2C2C2A;
+    --gold:    #C9A84C;
+    --gold-lt: #E8D9A0;
+    --gold-bg: #1C180D;
+    --cream:   #F5F0E8;
+    --muted:   #888880;
+    --white:   #FAFAF8;
+    --green:   #3A8F5C;
+    --green-bg:#0D1F14;
+    --red:     #C94C4C;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    font-size: 17px;
+    overflow-x: hidden;
+  }
+
+  .serif { font-family: 'Playfair Display', serif; }
+
+  /* ── Reveal animations ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .65s ease, transform .65s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-d1 { transition-delay: .1s; }
+  .reveal-d2 { transition-delay: .2s; }
+  .reveal-d3 { transition-delay: .3s; }
+  .reveal-d4 { transition-delay: .4s; }
+
+  /* ── Sticky top bar ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--black);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topbar-brand { font-size: 13px; letter-spacing: .18em; color: var(--gold); font-weight: 500; text-transform: uppercase; }
+  .topbar-cta {
+    background: var(--gold);
+    color: var(--black);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: .04em;
+    text-decoration: none;
+    transition: background .15s;
+  }
+  .topbar-cta:hover { background: var(--gold-lt); }
+
+  /* ── Layout ── */
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  .wrap-narrow { max-width: 580px; margin: 0 auto; padding: 0 24px; }
+
+  section { padding: 72px 0; }
+  section + section { border-top: 1px solid var(--border); }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    border-radius: 2px;
+    margin-bottom: 28px;
+  }
+
+  /* ── Hero ── */
+  #hero {
+    padding: 80px 0 72px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: .08em;
+    margin-bottom: 10px;
+    font-weight: 400;
+  }
+  .hero-h1 {
+    font-size: clamp(34px, 5vw, 52px);
+    font-weight: 600;
+    line-height: 1.18;
+    color: var(--white);
+    margin-bottom: 22px;
+  }
+  .hero-h1 em { font-style: italic; color: var(--gold-lt); }
+  .hero-sub {
+    font-size: 18px;
+    color: #A09888;
+    max-width: 560px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .hero-sub strong { color: var(--cream); font-weight: 500; }
+  .cta-primary {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--black);
+    font-size: 16px;
+    font-weight: 500;
+    padding: 16px 36px;
+    border-radius: 4px;
+    text-decoration: none;
+    letter-spacing: .03em;
+    transition: background .15s, transform .1s;
+    border: none;
+    cursor: pointer;
+  }
+  .cta-primary:hover { background: var(--gold-lt); transform: translateY(-1px); }
+  .cta-primary:active { transform: translateY(0); }
+  .hero-guarantee {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 14px;
+  }
+
+  /* ── Urgency strip ── */
+  .urgency-strip {
+    background: var(--gold-bg);
+    border-top: 1px solid #3A2E10;
+    border-bottom: 1px solid #3A2E10;
+    padding: 14px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--gold-lt);
+  }
+  .urgency-strip strong { color: var(--gold); }
+  #countdown { font-weight: 500; letter-spacing: .05em; color: var(--gold); }
+
+  /* ── Social proof numbers ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 48px 0 0;
+  }
+  .stat-item {
+    background: var(--surface);
+    padding: 24px 16px;
+    text-align: center;
+  }
+  .stat-n { font-size: 32px; font-weight: 500; color: var(--gold-lt); line-height: 1; margin-bottom: 6px; }
+  .stat-l { font-size: 12px; color: var(--muted); letter-spacing: .03em; }
+
+  /* ── Pain section ── */
+  #pain { background: var(--dark); }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .section-h2 {
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.25;
+    margin-bottom: 20px;
+  }
+  .section-h2 em { font-style: italic; color: var(--gold-lt); }
+  .section-body { color: #9A9288; font-size: 17px; line-height: 1.8; }
+  .section-body + .section-body { margin-top: 16px; }
+
+  .pain-list { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
+  .pain-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 20px;
+  }
+  .pain-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2A1010;
+    border: 1px solid #4A2020;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .pain-icon::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--red);
+    display: block;
+  }
+  .pain-text { font-size: 15px; color: var(--cream); line-height: 1.6; }
+  .pain-text strong { color: var(--white); font-weight: 500; }
+
+  .agitate-box {
+    margin-top: 40px;
+    background: #120808;
+    border: 1px solid #4A1A1A;
+    border-radius: 6px;
+    padding: 28px 28px;
+  }
+  .agitate-box .serif { font-size: clamp(20px, 3vw, 26px); color: #F0B0A0; font-style: italic; line-height: 1.5; margin-bottom: 16px; }
+  .agitate-body { font-size: 15px; color: #9A7070; line-height: 1.75; }
+  .agitate-body strong { color: #F0B0A0; font-weight: 500; }
+
+  /* ── Solution section ── */
+  .solution-intro {
+    background: var(--gold-bg);
+    border: 1px solid #3A2E10;
+    border-radius: 6px;
+    padding: 32px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .solution-intro .product-name {
+    font-size: 48px;
+    letter-spacing: .22em;
+    color: var(--gold-lt);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .solution-intro .product-tagline {
+    font-size: 16px;
+    color: #A09060;
+    line-height: 1.6;
+  }
+
+  /* ── What's included ── */
+  .include-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .include-item:last-child { border-bottom: none; }
+  .include-num {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .include-title { font-size: 16px; font-weight: 500; color: var(--white); margin-bottom: 5px; }
+  .include-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+  .include-value { font-size: 13px; color: var(--gold); font-weight: 500; margin-top: 8px; }
+
+  /* ── Benefits ── */
+  #benefits { background: var(--dark); }
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 36px;
+  }
+  @media (max-width: 560px) { .benefits-grid { grid-template-columns: 1fr; } }
+  .benefit-card {
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 22px 20px;
+  }
+  .benefit-card:hover { border-color: #3A3530; }
+  .benefit-icon {
+    width: 28px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin-bottom: 14px;
+  }
+  .benefit-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 8px; }
+  .benefit-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+  /* ── For whom ── */
+  .audience-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 36px;
+  }
+  @media (max-width: 560px) { .audience-split { grid-template-columns: 1fr; } }
+  .audience-yes, .audience-no {
+    border-radius: 6px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .audience-yes { background: var(--green-bg); border: 1px solid #1A3A28; }
+  .audience-no  { background: #120808; border: 1px solid #3A1818; }
+  .audience-label { font-size: 11px; letter-spacing: .12em; font-weight: 500; text-transform: uppercase; margin-bottom: 4px; }
+  .audience-yes .audience-label { color: var(--green); }
+  .audience-no  .audience-label { color: var(--red); }
+  .audience-row { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.55; }
+  .audience-yes .audience-row { color: #A0CCA8; }
+  .audience-no  .audience-row { color: #C09090; }
+  .dot-yes { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 6px; }
+  .dot-no  { width: 6px; height: 6px; border-radius: 50%; background: var(--red);   flex-shrink: 0; margin-top: 6px; }
+
+  /* ── Bonuses ── */
+  #bonuses { background: var(--dark); }
+  .bonus-item {
+    display: flex;
+    gap: 18px;
+    padding: 22px 22px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: var(--black);
+    align-items: flex-start;
+  }
+  .bonus-tag {
+    background: var(--gold-bg);
+    border: 1px solid #3A2E10;
+    color: var(--gold);
+    font-size: 10px;
+    letter-spacing: .1em;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .bonus-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 5px; }
+  .bonus-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .bonus-value { font-size: 12px; color: var(--gold); font-weight: 500; margin-top: 8px; }
+
+  /* ── Price section ── */
+  #price { text-align: center; }
+  .price-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 36px 0;
+    text-align: left;
+  }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .price-row:last-child { border-bottom: none; }
+  .price-row-name { color: var(--cream); }
+  .price-row-val { color: var(--gold); font-weight: 500; white-space: nowrap; margin-left: 16px; }
+  .price-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    background: var(--gold-bg);
+    border-top: 1px solid #3A2E10;
+    font-size: 15px;
+    color: var(--gold-lt);
+    font-weight: 500;
+  }
+
+  .price-reveal {
+    text-align: center;
+    margin: 36px 0 28px;
+  }
+  .price-was {
+    font-size: 15px;
+    color: var(--muted);
+    text-decoration: line-through;
+    margin-bottom: 6px;
+  }
+  .price-now {
+    font-size: 78px;
+    font-weight: 500;
+    color: var(--white);
+    line-height: 1;
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+  .price-currency { font-size: 36px; vertical-align: top; margin-top: 14px; display: inline-block; color: var(--gold-lt); }
+  .price-note { font-size: 13px; color: var(--muted); }
+
+  .cta-block { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .cta-big {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--black);
+    font-size: 17px;
+    font-weight: 500;
+    padding: 20px 48px;
+    border-radius: 4px;
+    text-decoration: none;
+    letter-spacing: .04em;
+    transition: background .15s, transform .1s;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+  }
+  .cta-big:hover { background: var(--gold-lt); transform: translateY(-1px); }
+  .cta-sub { font-size: 12px; color: var(--muted); }
+
+  /* ── Guarantee ── */
+  .guarantee-block {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    background: var(--green-bg);
+    border: 1px solid #1A3A28;
+    border-radius: 6px;
+    padding: 28px;
+    margin-top: 36px;
+    text-align: left;
+  }
+  .guarantee-shield {
+    width: 52px;
+    height: 56px;
+    flex-shrink: 0;
+  }
+  .guarantee-title { font-size: 16px; font-weight: 500; color: #A0E0B0; margin-bottom: 8px; }
+  .guarantee-text { font-size: 14px; color: #608070; line-height: 1.7; }
+
+  /* ── FAQ ── */
+  #faq { background: var(--dark); }
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 22px 0;
+  }
+  .faq-item:first-child { border-top: 1px solid var(--border); }
+  .faq-q { font-size: 15px; font-weight: 500; color: var(--white); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .faq-q::after { content: '+'; font-size: 20px; color: var(--gold); flex-shrink: 0; transition: transform .2s; }
+  .faq-item.open .faq-q::after { transform: rotate(45deg); }
+  .faq-a { font-size: 14px; color: var(--muted); line-height: 1.75; max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s ease; }
+  .faq-item.open .faq-a { max-height: 200px; padding-top: 14px; }
+
+  /* ── Testimonials ── */
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 36px;
+  }
+  @media (max-width: 560px) { .testimonials-grid { grid-template-columns: 1fr; } }
+  .testimonial {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 22px 20px;
+  }
+  .testimonial-stars { color: var(--gold); font-size: 13px; letter-spacing: 2px; margin-bottom: 12px; }
+  .testimonial-text { font-size: 14px; color: #9A9288; line-height: 1.7; font-style: italic; margin-bottom: 14px; }
+  .testimonial-author { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .testimonial-author strong { color: var(--cream); font-weight: 500; }
+
+  /* ── Final CTA ── */
+  #final-cta {
+    text-align: center;
+    background: var(--gold-bg);
+    border-top: 1px solid #3A2E10;
+    border-bottom: 1px solid #3A2E10;
+  }
+  #final-cta .section-h2 { color: var(--gold-lt); }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── Serif pull quote ── */
+  .pull-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(20px, 3vw, 28px);
+    font-style: italic;
+    color: var(--gold-lt);
+    text-align: center;
+    max-width: 560px;
+    margin: 40px auto;
+    line-height: 1.55;
+    padding: 0 24px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .stat-item + .stat-item { border-top: 1px solid var(--border); }
+    .guarantee-block { flex-direction: column; gap: 16px; }
+    section { padding: 52px 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── TOP BAR ─── -->
+<div class="topbar">
+  <span class="topbar-brand">FLUJO</span>
+  <a href="#price" class="topbar-cta">Quiero acceso por 27 €</a>
+</div>
+
+<!-- ─── URGENCY STRIP ─── -->
+<div class="urgency-strip">
+  <strong>Precio de lanzamiento termina en:</strong>&nbsp;&nbsp;
+  <span id="countdown">00h 00m 00s</span>
+  &nbsp;&nbsp;·&nbsp;&nbsp;Después sube a <strong>67 €</strong>
+</div>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="wrap-narrow" style="text-align:center">
+    <p class="hero-eyebrow reveal">Para quien gana dinero pero no sabe a dónde va</p>
+
+    <h1 class="hero-h1 serif reveal reveal-d1">
+      ¿Y si el problema no es<br>
+      cuánto ganas, sino que<br>
+      <em>nadie te enseñó a gestionarlo?</em>
+    </h1>
+
+    <p class="hero-sub reveal reveal-d2">
+      Descubre <strong>FLUJO</strong>: el sistema completo que te devuelve
+      el control total de tu dinero en 30 días,
+      sin apps de pago, sin cursos interminables, sin excusas.
+    </p>
+
+    <div class="reveal reveal-d3">
+      <a href="#price" class="cta-primary">Sí, quiero controlar mi dinero →</a>
+      <p class="hero-guarantee">Pago único de 27 € · Garantía de 30 días · Acceso inmediato</p>
+    </div>
+
+    <div class="stats-row reveal reveal-d4">
+      <div class="stat-item">
+        <div class="stat-n">5 min</div>
+        <div class="stat-l">Uso diario máximo</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-n">30 días</div>
+        <div class="stat-l">Para ver resultados reales</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-n">0 €</div>
+        <div class="stat-l">Herramientas extra necesarias</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PAIN ─── -->
+<section id="pain">
+  <div class="wrap-narrow">
+    <p class="section-label reveal">¿Te suena familiar?</p>
+    <h2 class="section-h2 serif reveal reveal-d1">
+      Cada mes se repite<br><em>el mismo ciclo</em>
+    </h2>
+    <p class="section-body reveal reveal-d2">
+      Cobras. Pagas lo esencial. Intentas ahorrar algo.
+      Y al final del mes miras el saldo y piensas: <em>"¿a dónde ha ido todo?"</em>
+    </p>
+
+    <div class="pain-list">
+      <div class="pain-item reveal">
+        <div class="pain-icon"></div>
+        <p class="pain-text"><strong>Llegas a final de mes con menos de lo que esperabas</strong> — y no sabes exactamente por qué.</p>
+      </div>
+      <div class="pain-item reveal reveal-d1">
+        <div class="pain-icon"></div>
+        <p class="pain-text"><strong>El ahorro siempre queda "para el mes que viene"</strong> — y ese mes nunca termina de llegar.</p>
+      </div>
+      <div class="pain-item reveal reveal-d2">
+        <div class="pain-icon"></div>
+        <p class="pain-text"><strong>Tienes metas financieras claras</strong> — vacaciones, fondo de emergencia, independencia — <strong>pero ningún sistema real para llegar.</strong></p>
+      </div>
+      <div class="pain-item reveal reveal-d3">
+        <div class="pain-icon"></div>
+        <p class="pain-text"><strong>Ya probaste apps de presupuesto</strong> — las usaste una semana y las olvidaste. Otra frustración más.</p>
+      </div>
+      <div class="pain-item reveal reveal-d4">
+        <div class="pain-icon"></div>
+        <p class="pain-text"><strong>Sientes que deberías ahorrar más</strong> — pero sin saber dónde recortar, todo parece necesario.</p>
+      </div>
+    </div>
+
+    <div class="agitate-box reveal">
+      <p class="serif">"La media española pierde más de 3.200 € al año en gastos que ni recuerda haber hecho."</p>
+      <p class="agitate-body">
+        No son compras grandes. Son los 4,50 € del café de cada mañana, las 7 suscripciones que sigues pagando sin usar,
+        el delivery de los jueves, los caprichos de los viernes. <strong>Individualmente invisibles. Sumados, devastadores.</strong>
+        Eso son 266 € al mes que podrían estar en tu cuenta de ahorro — o pagando ese viaje que llevas años posponiendo.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PULL QUOTE ─── -->
+<section style="padding: 56px 0; border-top: 1px solid var(--border)">
+  <p class="pull-quote reveal">
+    "No necesitas ganar más.<br>
+    Necesitas saber exactamente<br>
+    qué hacer con lo que ya tienes."
+  </p>
+</section>
+
+<!-- ─── SOLUTION ─── -->
+<section id="solution">
+  <div class="wrap-narrow">
+    <p class="section-label reveal">La solución</p>
+
+    <div class="solution-intro reveal reveal-d1">
+      <div class="product-name">FLUJO</div>
+      <p class="product-tagline">El sistema completo de control financiero personal.<br>
+      Una plantilla · Una guía · Una comunidad · Cuatro bonos.</p>
+    </div>
+
+    <p class="section-body reveal reveal-d2">
+      FLUJO no es otra app que tendrás que pagar cada mes.
+      No es un curso de 40 horas que nunca terminarás.
+      Es un <strong style="color:var(--cream)">sistema accionable en 24 horas</strong>
+      que combina todo lo que necesitas para tomar el control de tu dinero — hoy.
+    </p>
+
+    <hr class="divider">
+
+    <p class="section-label reveal">Todo lo que incluye</p>
+
+    <div class="include-item reveal">
+      <div class="include-num">01</div>
+      <div>
+        <p class="include-title">Plantilla Maestra FLUJO · Google Sheets</p>
+        <p class="include-desc">Tres pestañas completamente automatizadas: RESUMEN con tus KPIs del mes, REGISTRO para anotar cada movimiento en segundos, y META DE AHORRO que calcula cuándo llegarás a tu objetivo. Fórmulas listas. Gráficas automáticas. Tú solo introduces los datos.</p>
+        <p class="include-value">Valor: 67 €</p>
+      </div>
+    </div>
+    <div class="include-item reveal">
+      <div class="include-num">02</div>
+      <div>
+        <p class="include-title">Guía de inicio rápido · PDF 10 páginas</p>
+        <p class="include-desc">Todo lo que necesitas saber para empezar hoy: las 5 reglas de oro de las finanzas personales, cómo usar la plantilla paso a paso, la guía de categorías y tu plan de acción para los primeros 30 días. Sin relleno, sin teoría innecesaria.</p>
+        <p class="include-value">Valor: 37 €</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BENEFITS ─── -->
+<section id="benefits">
+  <div class="wrap-narrow">
+    <p class="section-label reveal">Qué cambia en tu vida</p>
+    <h2 class="section-h2 serif reveal reveal-d1">
+      Dentro de 30 días<br><em>esto es lo que tienes</em>
+    </h2>
+
+    <div class="benefits-grid">
+      <div class="benefit-card reveal">
+        <div class="benefit-icon"></div>
+        <p class="benefit-title">Sabes exactamente a dónde va cada euro</p>
+        <p class="benefit-desc">Por primera vez, el desglose completo de tus ingresos y gastos, categorizado y actualizado en tiempo real.</p>
+      </div>
+      <div class="benefit-card reveal reveal-d1">
+        <div class="benefit-icon"></div>
+        <p class="benefit-title">Tu ahorro crece de forma automática</p>
+        <p class="benefit-desc">Con la transferencia automatizada el día que cobras, el ahorro deja de ser una intención y se convierte en un hecho.</p>
+      </div>
+      <div class="benefit-card reveal reveal-d2">
+        <div class="benefit-icon"></div>
+        <p class="benefit-title">Identificas dónde recortar sin sacrificar calidad de vida</p>
+        <p class="benefit-desc">El sistema te muestra qué categorías están infladas. Tomas decisiones con datos, no con culpa.</p>
+      </div>
+      <div class="benefit-card reveal reveal-d3">
+        <div class="benefit-icon"></div>
+        <p class="benefit-title">Tienes un plan real para cada meta</p>
+        <p class="benefit-desc">La calculadora de meta te dice exactamente cuántos meses necesitas para llegar. Las metas vagas se vuelven fechas reales.</p>
+      </div>
+      <div class="benefit-card reveal reveal-d4">
+        <div class="benefit-icon"></div>
+        <p class="benefit-title">5 minutos al día es todo lo que necesitas</p>
+        <p class="benefit-desc">El sistema está diseñado para la vida real, no para personas con horas libres. Anotas, revisas, sigues con tu día.</p>
+      </div>
+      <div class="benefit-card reveal reveal-d4">
+        <div class="benefit-icon"></div>
+        <p class="benefit-title">Rompes el ciclo de una vez por todas</p>
+        <p class="benefit-desc">No es motivación temporal. Es un hábito estructurado. Cuando el control es automático, los resultados son inevitables.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOR WHOM ─── -->
+<section id="forwhom">
+  <div class="wrap-narrow">
+    <p class="section-label reveal">¿Para quién es esto?</p>
+    <h2 class="section-h2 serif reveal reveal-d1">Sé honesto<br><em>contigo mismo</em></h2>
+
+    <div class="audience-split">
+      <div class="audience-yes reveal reveal-d2">
+        <p class="audience-label">FLUJO es para ti si</p>
+        <div class="audience-row"><div class="dot-yes"></div><span>Ganas dinero pero no sabes a dónde va</span></div>
+        <div class="audience-row"><div class="dot-yes"></div><span>Quieres empezar a ahorrar de verdad este mes</span></div>
+        <div class="audience-row"><div class="dot-yes"></div><span>Tienes una meta financiera concreta</span></div>
+        <div class="audience-row"><div class="dot-yes"></div><span>Prefieres un sistema simple que funcione</span></div>
+        <div class="audience-row"><div class="dot-yes"></div><span>Estás dispuesto a dedicar 5 minutos al día</span></div>
+      </div>
+      <div class="audience-no reveal reveal-d3">
+        <p class="audience-label">No es para ti si</p>
+        <div class="audience-row"><div class="dot-no"></div><span>Buscas hacerte rico de la noche a la mañana</span></div>
+        <div class="audience-row"><div class="dot-no"></div><span>No estás dispuesto a anotar ningún gasto</span></div>
+        <div class="audience-row"><div class="dot-no"></div><span>Esperas resultados sin poner de tu parte</span></div>
+        <div class="audience-row"><div class="dot-no"></div><span>Ya tienes un sistema que te funciona bien</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BONUSES ─── -->
+<section id="bonuses">
+  <div class="wrap-narrow">
+    <p class="section-label reveal">Bonos exclusivos incluidos</p>
+    <h2 class="section-h2 serif reveal reveal-d1">
+      Cuatro bonos que<br><em>multiplican los resultados</em>
+    </h2>
+    <p class="section-body reveal reveal-d2">Estos cuatro bonos están diseñados para darte ventaja desde el primer día. Podrías comprarlos por separado. Con FLUJO los llevas todos incluidos.</p>
+
+    <div style="margin-top: 28px">
+      <div class="bonus-item reveal">
+        <span class="bonus-tag">Bono 1</span>
+        <div>
+          <p class="bonus-title">Presupuesto Anual FLUJO — Vista 12 meses</p>
+          <p class="bonus-desc">Hoja de cálculo extra con todos los meses del año en columna. Ve la evolución de tus ingresos, gastos y ahorro de un vistazo. Perfecta para detectar meses problemáticos antes de que lleguen.</p>
+          <p class="bonus-value">Valor: 47 €</p>
+        </div>
+      </div>
+      <div class="bonus-item reveal reveal-d1">
+        <span class="bonus-tag">Bono 2</span>
+        <div>
+          <p class="bonus-title">Los 10 errores que te cuestan 3.000 € al año</p>
+          <p class="bonus-desc">Mini ebook PDF con los 10 errores financieros más comunes entre personas que ganan bien pero no ahorran. Para cada error: cómo reconocerlo y cómo corregirlo en 24 horas.</p>
+          <p class="bonus-value">Valor: 27 €</p>
+        </div>
+      </div>
+      <div class="bonus-item reveal reveal-d2">
+        <span class="bonus-tag">Bono 3</span>
+        <div>
+          <p class="bonus-title">Checklist de saneamiento financiero en 21 días</p>
+          <p class="bonus-desc">Un PDF accionable con una tarea concreta para cada uno de los 21 primeros días. Sin teoría: solo acciones que producen resultados visibles en menos de 3 semanas.</p>
+          <p class="bonus-value">Valor: 17 €</p>
+        </div>
+      </div>
+      <div class="bonus-item reveal reveal-d3">
+        <span class="bonus-tag">Bono 4</span>
+        <div>
+          <p class="bonus-title">Acceso de por vida a la comunidad privada FLUJO</p>
+          <p class="bonus-desc">Un grupo privado de Telegram donde compartir avances, hacer preguntas, y mantener el hábito con personas que tienen los mismos objetivos. Acceso de por vida incluido desde el primer día.</p>
+          <p class="bonus-value">Valor: 97 €</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ─── -->
+<section id="testimonials">
+  <div class="wrap-narrow">
+    <p class="section-label reveal">Resultados reales</p>
+    <h2 class="section-h2 serif reveal reveal-d1">Lo que dicen<br><em>quienes lo usan</em></h2>
+
+    <div class="testimonials-grid">
+      <div class="testimonial reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"En el primer mes descubrí que estaba pagando 6 suscripciones que había olvidado. Las cancelé y recuperé 58 € al mes. En 6 meses eso son 348 € que ahora van a mi fondo de emergencia."</p>
+        <p class="testimonial-author"><strong>María G.</strong> — Madrid</p>
+      </div>
+      <div class="testimonial reveal reveal-d1">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Llevaba 3 años diciéndome que empezaría a ahorrar. Con FLUJO tardé 20 minutos en configurarlo y esa misma semana ya tenía la transferencia automática configurada."</p>
+        <p class="testimonial-author"><strong>Carlos R.</strong> — Barcelona</p>
+      </div>
+      <div class="testimonial reveal reveal-d2">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Lo que más me sorprendió fue ver el desglose por categorías. En alimentación gastaba 320 € al mes. Con pequeños cambios lo bajé a 210 €. Son 1.320 € al año de diferencia."</p>
+        <p class="testimonial-author"><strong>Laura M.</strong> — Valencia</p>
+      </div>
+      <div class="testimonial reveal reveal-d3">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"La calculadora de meta me dijo que necesitaba 14 meses para mi fondo de emergencia. Eso me dio la motivación que necesitaba. Ahora voy por el mes 6 y voy incluso más rápido."</p>
+        <p class="testimonial-author"><strong>Diego F.</strong> — Sevilla</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICE ─── -->
+<section id="price">
+  <div class="wrap-narrow" style="text-align:center">
+    <p class="section-label reveal">Tu inversión hoy</p>
+    <h2 class="section-h2 serif reveal reveal-d1">
+      Todo incluido.<br><em>Un solo pago. Para siempre.</em>
+    </h2>
+
+    <div class="price-table reveal reveal-d2">
+      <div class="price-row"><span class="price-row-name">Plantilla Maestra FLUJO · Google Sheets</span><span class="price-row-val">67 €</span></div>
+      <div class="price-row"><span class="price-row-name">Guía de inicio rápido · PDF 10 páginas</span><span class="price-row-val">37 €</span></div>
+      <div class="price-row"><span class="price-row-name">Bono 1 · Presupuesto Anual 12 meses</span><span class="price-row-val">47 €</span></div>
+      <div class="price-row"><span class="price-row-name">Bono 2 · Los 10 errores que te cuestan 3.000 €/año</span><span class="price-row-val">27 €</span></div>
+      <div class="price-row"><span class="price-row-name">Bono 3 · Checklist saneamiento 21 días</span><span class="price-row-val">17 €</span></div>
+      <div class="price-row"><span class="price-row-name">Bono 4 · Comunidad privada de por vida</span><span class="price-row-val">97 €</span></div>
+      <div class="price-total-row"><span>Valor total del sistema</span><span>295 €</span></div>
+    </div>
+
+    <div class="price-reveal reveal">
+      <p class="price-was">Precio normal: 67 €</p>
+      <p class="price-now"><span class="price-currency">€</span>27</p>
+      <p class="price-note">Precio de lanzamiento · Pago único · Acceso inmediato a todo</p>
+    </div>
+
+    <div class="cta-block reveal reveal-d1">
+      <a href="https://gumroad.com" class="cta-big">Quiero FLUJO por 27 € ahora →</a>
+      <p class="cta-sub">Pago seguro · Acceso instantáneo · Garantía de 30 días</p>
+    </div>
+
+    <div class="guarantee-block reveal reveal-d2">
+      <svg class="guarantee-shield" viewBox="0 0 52 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M26 2L4 12v16c0 13.25 9.5 25.65 22 29 12.5-3.35 22-15.75 22-29V12L26 2z" fill="#1A3A28" stroke="#3A8F5C" stroke-width="1.5"/>
+        <path d="M17 28l6 6 12-12" stroke="#3A8F5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <p class="guarantee-title">Garantía de devolución total — 30 días</p>
+        <p class="guarantee-text">Si en 30 días no estás viendo resultados concretos en tu control financiero, te devuelvo el 100% del dinero. Sin formularios, sin preguntas incómodas, sin burocracia. Mi reputación vale más que 27 €.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section id="faq">
+  <div class="wrap-narrow">
+    <p class="section-label reveal">Preguntas frecuentes</p>
+    <h2 class="section-h2 serif reveal reveal-d1">Lo que te estás<br><em>preguntando ahora mismo</em></h2>
+
+    <div style="margin-top:32px">
+      <div class="faq-item reveal">
+        <p class="faq-q">¿Necesito saber de finanzas para usar esto?</p>
+        <p class="faq-a">No. FLUJO está diseñado específicamente para personas sin formación financiera. Si sabes introducir un número en una celda, sabes usar la plantilla. La guía te lleva de la mano paso a paso.</p>
+      </div>
+      <div class="faq-item reveal">
+        <p class="faq-q">¿Funciona con Google Sheets gratis?</p>
+        <p class="faq-a">Sí, completamente. Recibirás el archivo .xlsx que funciona perfectamente en Google Sheets (gratuito) y también en Excel. No necesitas pagar nada extra.</p>
+      </div>
+      <div class="faq-item reveal">
+        <p class="faq-q">¿Cuánto tiempo necesito dedicarle al día?</p>
+        <p class="faq-a">Entre 2 y 5 minutos al día para registrar tus movimientos. La revisión semanal te lleva unos 10 minutos. El sistema está diseñado para encajar en tu vida, no para añadir más trabajo.</p>
+      </div>
+      <div class="faq-item reveal">
+        <p class="faq-q">¿Cuándo recibo acceso?</p>
+        <p class="faq-a">Inmediatamente después del pago recibirás un email con el enlace de descarga directa a todos los archivos y acceso a la comunidad de Telegram.</p>
+      </div>
+      <div class="faq-item reveal">
+        <p class="faq-q">¿La garantía es real?</p>
+        <p class="faq-a">Al 100%. Si en 30 días no estás satisfecho, escríbeme y te devuelvo el dinero sin preguntas. El riesgo es completamente mío.</p>
+      </div>
+      <div class="faq-item reveal">
+        <p class="faq-q">¿El precio de 27 € es permanente?</p>
+        <p class="faq-a">No. Es un precio de lanzamiento limitado. Una vez termine el período de lanzamiento, el precio pasa a 67 €. El precio que ves en el contador es real.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FINAL CTA ─── -->
+<section id="final-cta">
+  <div class="wrap-narrow" style="text-align:center">
+    <p class="section-label reveal" style="color:var(--gold)">Toma la decisión ahora</p>
+    <h2 class="section-h2 serif reveal reveal-d1" style="color:var(--gold-lt)">
+      Cada mes sin control es<br><em>dinero que no vuelve</em>
+    </h2>
+    <p style="color:#9A8060;font-size:17px;max-width:480px;margin:0 auto 36px;line-height:1.75" class="reveal reveal-d2">
+      Llevas tiempo sabiendo que necesitas hacer algo con tus finanzas.
+      Hoy tienes la oportunidad de hacerlo por 27 €,
+      con garantía total y acceso inmediato a todo.
+    </p>
+
+    <div class="cta-block reveal reveal-d3">
+      <a href="https://gumroad.com" class="cta-big">Acceder a FLUJO por 27 € →</a>
+      <p class="cta-sub" style="color:#6A5A40">Pago único · Sin suscripción · Garantía 30 días sin preguntas</p>
+    </div>
+
+    <div style="margin-top:36px;font-size:13px;color:#6A5A40" class="reveal">
+      <strong style="color:var(--gold)">Precio de lanzamiento termina en:</strong>
+      &nbsp;<span id="countdown2" style="color:var(--gold);font-weight:500">--</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <p style="margin-bottom:6px">FLUJO — Sistema de Control Financiero Personal</p>
+  <p>© 2025 · Uso personal · Prohibida la reventa · <a href="#" style="color:var(--muted)">Política de privacidad</a></p>
+</footer>
+
+<script>
+  // ── Countdown timer (48h from page load) ──
+  const deadline = new Date(Date.now() + 48 * 60 * 60 * 1000);
+
+  function updateCountdown() {
+    const diff = deadline - Date.now();
+    if (diff <= 0) {
+      ['countdown','countdown2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = 'EXPIRADO';
+      });
+      return;
+    }
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const str = `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+    ['countdown','countdown2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = str;
+    });
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ── Scroll reveal ──
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => io.observe(el));
+
+  // ── FAQ accordion ──
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
